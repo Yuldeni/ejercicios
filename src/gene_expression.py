@@ -13,6 +13,7 @@ No todos los errores estan identificados en los comentarios.
 """
 
 import pandas as pd
+import argparse
 
 
 def load_expression_table(path):
@@ -25,8 +26,8 @@ def load_expression_table(path):
     Returns:
         DataFrame: DataFrame con las columnas 'gene' y 'expression'.
     """
-    # ERROR: el separador es incorrecto para un TSV (pista: debería ser tab)
-    df = pd.read_csv(path, sep=",") 
+    # Leer TSV usando tabulador como separador
+    df = pd.read_csv(path, sep="\t")
 
     # Validación básica de columnas
     if "gene" not in df.columns or "expression" not in df.columns:
@@ -52,8 +53,8 @@ def filter_gene(df, threshold):
     Returns:
         DataFrame: Subconjunto con genes filtrados.
     """
-    # ERROR: condición lógica equivocada (pista: revisar el operador de comparación)
-    filtered = df[df["expression"] <= threshold] 
+    # Filtra genes con expresión >= threshold
+    filtered = df[df["expression"] >= threshold]
 
     # Ordenar alfabéticamente por gene
     filtered = filtered.sort_values("gene")
@@ -77,12 +78,12 @@ def build_parser():
         help="Archivo TSV con columnas 'gene' y 'expression'."
     )
 
-    # ERROR 3: el tipo de dato no es el adecuado (pista: threshold debe ser numérico)
+    # threshold es numérico (int o float)
     parser.add_argument(
         "-t",
         "--threshold",
-        type=str,
-        default="0",
+        type=float,
+        default=0.0,
         help="Umbral mínimo de expresión (ej. 10.5)."
     )
 
@@ -93,21 +94,25 @@ def main():
     parser = build_parser()
     args = parser.parse_args()
 
+    # Cargar tabla de expresión
     df = load_expression_table(args.file)
 
-    # Aquí threshold llega con el tipo definido en build_parser()
+    # Aquí threshold llega con el tipo definido en build_parser() (float)
     threshold = args.threshold
 
-    filtered = filter_genes(df, threshold)
+    # Filtrar genes
+    filtered = filter_gene(df, threshold)
 
+    # Si no hay genes filtrados, imprimir mensaje
     if filtered.empty:
         print("No se encontraron genes por encima del threshold.")
         return
 
+    # Si hay genes, imprimir lista
     print("Genes filtrados:")
     for gene in filtered["gene"].tolist():
         print(gene)
 
 
 if __name__ == "__main__":
-    main
+    main()
