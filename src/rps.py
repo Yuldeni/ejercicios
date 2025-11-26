@@ -1,73 +1,102 @@
 #!/usr/bin/env python3
-"""
-TODO: Completar este programa de piedra, papel o tijera.
+"""Juego Piedra, Papel o Tijera (Rock-Paper-Scissors).
 
-Instrucciones:
-- El juego debe pedir al usuario "rock", "paper" o "scissors".
-- Debe repetirse muchas veces.
-- Si el usuario presiona ENTER sin escribir nada, termina el programa.
-- La computadora debe elegir aleatoriamente entre las tres opciones.
-- Debe mostrar quién ganó.
-- Si el usuario gana, mostrar emojis divertidos (🎉✨🚀).
-- Validar entradas incorrectas.
-- Usar funciones y type hints modernos (Python 3.9+), ejemplo: tuple[str, str].
+Este módulo implementa un juego interactivo por línea de comandos donde
+el usuario juega contra la computadora. La interacción es simple:
+- El usuario escribe "rock", "paper" o "scissors".
+- El juego se repite hasta que el usuario presiona ENTER sin introducir valor.
+- La computadora selecciona aleatoriamente una opción.
+- Se imprime el resultado de cada ronda y si el usuario gana se muestran
+    emojis de celebración.
+
+El módulo proporciona las funciones:
+- determine_result(user, cpu): determina victoria/derrota/empate.
+- play(user_choice): ejecuta una ronda y devuelve (cpu_choice, resultado).
+- main(): bucle principal del CLI.
 """
 
 import random
+from typing import Tuple
 
-# TODO 1: Lista de opciones válidas
+
+# Lista de opciones válidas
 VALID_CHOICES = ["rock", "paper", "scissors"]
 
 
 def determine_result(user: str, cpu: str) -> str:
+    """Determina el resultado de una ronda entre usuario y CPU.
+
+    Args:
+        user: Elección del usuario -- una de "rock", "paper", "scissors".
+        cpu: Elección de la CPU -- una de "rock", "paper", "scissors".
+
+    Returns:
+        'win' si el usuario gana, 'lose' si pierde, y 'draw' si empatan.
     """
-    TODO 2: Determinar si el usuario gana, pierde o empata.
+    # Igualdad
+    if user == cpu:
+        return "draw"
 
-    Debe regresar:
-    - "win"
-    - "lose"
-    - "draw"
+    # Mapa de victoria: clave gana a valor
+    wins = {"rock": "scissors", "scissors": "paper", "paper": "rock"}
+    if wins.get(user) == cpu:
+        return "win"
+    return "lose"
+
+
+def play(user_choice: str) -> Tuple[str, str]:
+    """Ejecuta una ronda del juego con la elección del usuario.
+
+    Valida la entrada, elige la jugada de la CPU al azar y calcula el resultado.
+
+    Args:
+        user_choice: Elección del usuario ('rock'|'paper'|'scissors').
+
+    Returns:
+        Tupla (cpu_choice, resultado) donde resultado es 'win'|'lose'|'draw'.
     """
-    # TODO: implementar la lógica del juego
-    pass
+    # Validar entrada
+    if user_choice not in VALID_CHOICES:
+        raise ValueError(f"Opción inválida: {user_choice}")
 
+    # Elegir para la CPU
+    cpu_choice = random.choice(VALID_CHOICES)
 
-def play(user_choice: str) -> tuple[str, str]:
-    """
-    TODO 3: Ejecutar una ronda del juego.
-
-    Debe regresar una tupla:
-        (eleccion_cpu, resultado)
-
-    - Validar que user_choice esté en VALID_CHOICES
-    - Elegir opción aleatoria para la CPU
-    - Llamar a determine_result()
-    """
-    # TODO: Validar entrada
-    # TODO: Elegir para la CPU usando random.choice()
-    # TODO: Llamar determine_result()
-    # TODO: retornar tupla (cpu_choice, result)
-    pass
+    # Determinar resultado
+    result = determine_result(user_choice, cpu_choice)
+    return cpu_choice, result
 
 
 def main() -> None:
-    """
-    TODO 4: Hacer que el juego se repita usando un ciclo while.
+    """Bucle principal del juego. Lee entradas del usuario y muestra resultados.
 
-    - Pedir la elección con input()
-    - Salir si el usuario presiona ENTER
-    - Mostrar:
-        CPU: <elección>
-        Resultado: <win/lose/draw>
-    - Si el usuario gana, mostrar 🎉✨🎆🎇🚀
+    El bucle se repite hasta que el usuario presione ENTER sin escribir nada.
+    Para cada ronda se valida la entrada, se imprime la elección de la CPU y
+    el resultado. Si el usuario gana, se muestra un mensaje con emojis.
     """
     print("🎮 Rock, Paper, Scissors Game 🎮")
     print("Escribe rock, paper o scissors.")
     print("Presiona ENTER sin escribir nada para salir.")
     print("-" * 40)
 
-    # TODO: implementar ciclo del juego
-    pass
+    while True:
+        # Leer entrada del usuario
+        user_input = input("Tu elección (rock/paper/scissors) > ").strip().lower()
+
+        # Salir si presiona ENTER
+        if user_input == "":
+            print("¡Gracias por jugar! Hasta la próxima 👋")
+            break
+
+        if user_input not in VALID_CHOICES:
+            print("Entrada inválida. Escribe rock, paper o scissors.")
+            continue
+
+        cpu_choice, result = play(user_input)
+        print(f"CPU: {cpu_choice}")
+        print(f"Resultado: {result}")
+        if result == "win":
+            print("🎉✨🚀 ¡Ganaste! 🎉✨🚀")
 
 
 if __name__ == "__main__":
